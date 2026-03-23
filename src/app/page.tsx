@@ -124,9 +124,15 @@ export default async function LandingPage() {
                 body: "Copy as markdown or export as PDF. Drop it into your proposal exactly as-is. No editing required.",
               },
             ].map(({ icon: Icon, step, title, body }) => (
-              <div key={step} className="flex flex-col items-start sm:items-center sm:text-center">
+              <div
+                key={step}
+                className="flex flex-col items-start sm:items-center sm:text-center"
+              >
                 <div className="relative z-10 flex items-center justify-center size-10 rounded-full bg-background border border-border mb-5">
                   <Icon className="size-4 text-primary" />
+                </div>
+                <div className="text-xs font-mono text-muted-foreground mb-2 tracking-widest">
+                  {step}
                 </div>
                 <div className="text-xs font-mono text-muted-foreground mb-2 tracking-widest">{step}</div>
                 <h3 className="font-semibold mb-2">{title}</h3>
@@ -283,7 +289,7 @@ export default async function LandingPage() {
             <span>
               Premise — built by{" "}
               <a
-                href="https://roadshowcreative.com"
+                href="https://roadshowcreative.dev"
                 className="hover:text-foreground transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -292,9 +298,21 @@ export default async function LandingPage() {
               </a>
             </span>
           </div>
-          <span>
-            © {new Date().getFullYear()} Roadshow Creative · usepremise.app
-          </span>
+          <div className="flex items-center gap-4">
+            <span>© {new Date().getFullYear()} Roadshow Creative</span>
+            <Link
+              href="/terms"
+              className="hover:text-foreground transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/privacy"
+              className="hover:text-foreground transition-colors"
+            >
+              Privacy
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
