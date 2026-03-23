@@ -10,6 +10,7 @@ import { createServerClient } from "@/lib/supabase";
 import { FREE_SCOPE_LIMIT } from "@/lib/usage";
 import { DeleteScopeButton } from "@/components/delete-scope-button";
 import type { Scope } from "@/lib/supabase";
+import type { SessionClaims } from "@/types/auth";
 
 const PLATFORM_LABELS: Record<string, string> = {
   "web-app": "Web app",
@@ -29,8 +30,10 @@ const BUDGET_LABELS: Record<string, string> = {
 };
 
 export default async function DashboardPage() {
-  const { userId, has } = await auth();
-  const isPro = has({ plan: "pro" });
+  const { userId, has, sessionClaims } = await auth();
+  const isPro =
+    has({ plan: "pro" }) ||
+    (sessionClaims as SessionClaims)?.metadata?.special_access === true;
 
   const supabase = createServerClient();
   const { data: scopes } = await supabase
@@ -58,8 +61,16 @@ export default async function DashboardPage() {
                 Free · {remaining} scope{remaining !== 1 ? "s" : ""} left
               </Badge>
             )}
-            {isPro && (
-              <Badge className="text-xs hidden sm:inline-flex">Pro</Badge>
+            {isPro &&
+              !(sessionClaims as SessionClaims)?.metadata?.special_access ===
+                true && (
+                <Badge className="text-xs hidden sm:inline-flex">Pro</Badge>
+              )}
+            {(sessionClaims as SessionClaims)?.metadata?.special_access ===
+              true && (
+              <Badge className="text-xs hidden sm:inline-flex bg-green-500/10 text-green-600 border-green-500/20">
+                Special Access
+              </Badge>
             )}
             <UserButton />
           </div>
@@ -114,7 +125,9 @@ export default async function DashboardPage() {
                         scopeTitle={scope.title || "Untitled scope"}
                       />
                     )}
-                    <span className="text-muted-foreground text-xs">View →</span>
+                    <span className="text-muted-foreground text-xs">
+                      View →
+                    </span>
                   </div>
                 </div>
               </Link>
