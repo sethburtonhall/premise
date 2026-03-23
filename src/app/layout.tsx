@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://usepremise.app"),
   title: "Premise — AI Technical Scoping for Agencies",
   description:
     "Turn a client brief into a technical scope in minutes. Stack recommendations, phase breakdowns, and risk analysis — ready to paste into your proposal.",
@@ -39,16 +39,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html
-        lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      >
-        <body className="min-h-full flex flex-col">
-          {children}
-          <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <body className="min-h-full flex flex-col">
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }

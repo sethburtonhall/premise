@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export function CopyButton({ text }: { text: string }) {
+type Variant = "default" | "outline" | "ghost" | "secondary" | "destructive";
+
+export function CopyButton({ text, variant = "default" }: { text: string; variant?: Variant }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -13,7 +15,7 @@ export function CopyButton({ text }: { text: string }) {
   };
 
   return (
-    <Button size="sm" onClick={handleCopy}>
+    <Button size="sm" variant={variant} onClick={handleCopy}>
       {copied ? "Copied!" : "Copy markdown"}
     </Button>
   );

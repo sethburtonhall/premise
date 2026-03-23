@@ -2,10 +2,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { createServerClient } from "@/lib/supabase";
 import { CopyButton } from "@/components/copy-button";
 import { ButtonLink } from "@/components/button-link";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { ExportPdfButton } from "@/components/export-pdf-button";
+import { DeleteScopeButton } from "@/components/delete-scope-button";
 import type { Scope } from "@/lib/supabase";
 
 const PLATFORM_LABELS: Record<string, string> = {
@@ -31,7 +35,8 @@ export default async function ScopePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { userId } = await auth();
+  const { userId, has } = await auth();
+  const isPro = has({ plan: "pro" });
 
   const supabase = createServerClient();
   const { data: scope } = await supabase
@@ -51,12 +56,15 @@ export default async function ScopePage({
       <nav className="border-b border-border">
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
           <Logo />
-          <Link
-            href="/dashboard"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            ← Dashboard
-          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/dashboard"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ← Dashboard
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -91,23 +99,41 @@ export default async function ScopePage({
         {s.input?.description && (
           <div className="mb-8 border border-border rounded-lg p-5 bg-card">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
-              Original brief
+              Client brief
             </p>
-            <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap">
+            <p className="leading-relaxed text-foreground/80 whitespace-pre-wrap">
               {s.input.description}
             </p>
           </div>
         )}
 
         {/* Actions */}
-        <div className="flex items-center gap-3 mb-8">
-          <CopyButton text={s.output} />
-          <ButtonLink href="/scope/new" size="sm" variant="outline">New scope</ButtonLink>
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-2">
+            <CopyButton text={s.output} />
+            <ExportPdfButton scopeId={s.id} />
+          </div>
+          <div className="flex items-center gap-2 group">
+            <ButtonLink href="/scope/new" size="sm" variant="ghost">
+              + New scope
+            </ButtonLink>
+            {isPro && (
+              <>
+                <div className="w-px h-5 bg-border" />
+                <DeleteScopeButton
+                  scopeId={s.id}
+                  scopeTitle={s.title || "Untitled scope"}
+                  redirectOnDelete="/dashboard"
+                  variant="button"
+                />
+              </>
+            )}
+          </div>
         </div>
 
         {/* Scope output */}
-        <div className="border border-border rounded-lg p-8 bg-card font-mono text-sm leading-relaxed whitespace-pre-wrap text-foreground/90">
-          {s.output}
+        <div className="border border-border rounded-lg p-8 bg-card">
+          <MarkdownRenderer content={s.output} />
         </div>
       </main>
     </div>

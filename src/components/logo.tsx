@@ -22,7 +22,7 @@ export function Logo({ className }: { className?: string }) {
         <line x1="12" y1="18" x2="12" y2="22" />
         <circle cx="12" cy="12" r="1.5" fill="#6366F1" stroke="none" />
       </svg>
-      <span className="font-semibold tracking-tight text-foreground text-xl">
+      <span className="font-semibold tracking-tight text-foreground text-2xl">
         Premise
       </span>
     </Link>
