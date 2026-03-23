@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400&display=swap");
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #0b0b12;
+      }
+
+      .frame {
+        width: 1200px;
+        height: 630px;
+        position: relative;
+        background: #0b0b12;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 56px 64px 52px;
+      }
+
+      /* Grid texture */
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(99, 102, 241, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+      }
+
+      /* Indigo glow blob — top right */
+      .glow {
+        position: absolute;
+        top: -120px;
+        right: -80px;
+        width: 480px;
+        height: 480px;
+        background: radial-gradient(
+          circle,
+          rgba(99, 102, 241, 0.18) 0%,
+          rgba(99, 102, 241, 0.04) 55%,
+          transparent 75%
+        );
+        pointer-events: none;
+      }
+
+      /* Subtle bottom edge glow */
+      .glow-bottom {
+        position: absolute;
+        bottom: -60px;
+        left: 160px;
+        width: 320px;
+        height: 200px;
+        background: radial-gradient(
+          ellipse,
+          rgba(99, 102, 241, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      /* Decorative crosshair — large, background, top-right */
+      .bg-crosshair {
+        position: absolute;
+        top: 80px;
+        right: 80px;
+        width: 320px;
+        height: 320px;
+        opacity: 0.06;
+        pointer-events: none;
+      }
+
+      /* Scope document texture — right side */
+      .doc-texture {
+        position: absolute;
+        right: 64px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 300;
+        font-size: 11px;
+        line-height: 1.9;
+        color: #6366f1;
+        opacity: 0.18;
+        text-align: left;
+        white-space: pre;
+        pointer-events: none;
+        width: 280px;
+      }
+
+      /* Top row — wordmark */
+      .top {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .icon-tile {
+        width: 52px;
+        height: 52px;
+        background: #6366f1;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow:
+          0 0 0 1px rgba(99, 102, 241, 0.4),
+          0 8px 32px rgba(99, 102, 241, 0.3);
+      }
+
+      .icon-tile svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .wordmark {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 26px;
+        letter-spacing: -0.02em;
+        color: #f0f0f5;
+      }
+
+      /* Center — tagline */
+      .center {
+        position: relative;
+        z-index: 2;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-top: 8px;
+        max-width: 680px;
+      }
+
+      .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #6366f1;
+        margin-bottom: 20px;
+      }
+
+      .tagline {
+        font-family: "Instrument Serif", serif;
+        font-style: italic;
+        font-size: 88px;
+        line-height: 0.95;
+        letter-spacing: -0.02em;
+        color: #f0f0f5;
+        margin-bottom: 28px;
+      }
+
+      .tagline em {
+        font-style: normal;
+        color: #f0f0f5;
+        opacity: 0.35;
+      }
+
+      .divider {
+        width: 48px;
+        height: 1px;
+        background: #6366f1;
+        margin-bottom: 20px;
+        opacity: 0.7;
+      }
+
+      .sub {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 0.01em;
+        color: #6b6b8a;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      /* Bottom row */
+      .bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        z-index: 2;
+      }
+
+      .bottom-left {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: #2a2a3e;
+        letter-spacing: 0.05em;
+      }
+
+      .badge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #6366f1;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        padding: 5px 12px;
+        border-radius: 100px;
+      }
+
+      /* Horizontal rule accent */
+      .h-rule {
+        position: absolute;
+        bottom: 100px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(99, 102, 241, 0.12) 20%,
+          rgba(99, 102, 241, 0.12) 80%,
+          transparent
+        );
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <div class="grid"></div>
+      <div class="glow"></div>
+      <div class="glow-bottom"></div>
+      <div class="h-rule"></div>
+
+      <!-- Background large crosshair -->
+      <svg
+        class="bg-crosshair"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#6366F1"
+        stroke-width="0.5"
+        stroke-linecap="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="22" y1="12" x2="18" y2="12" />
+        <line x1="6" y1="12" x2="2" y2="12" />
+        <line x1="12" y1="6" x2="12" y2="2" />
+        <line x1="12" y1="18" x2="12" y2="22" />
+        <circle cx="12" cy="12" r="6" />
+        <circle cx="12" cy="12" r="1.5" fill="#6366F1" />
+      </svg>
+
+      <!-- Scope document texture -->
+      <div class="doc-texture">## Recommended Stack
+Next.js · Supabase · Vercel
+Tailwind CSS · TypeScript
+
+## Phase Breakdown
+Discovery     · 1–2 wks
+Design        · 2–3 wks
+Development   · 6–8 wks
+Launch        · 1 wk
+
+## Technical Risks
+1. Auth complexity
+2. Real-time sync
+3. Mobile parity
+
+## Next Steps
+→ Define data model
+→ Wireframe core flows
+→ Kick off discovery</div>
+
+      <!-- Top wordmark -->
+      <div class="top">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#6366F1"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="shrink-0"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="22" y1="12" x2="18" y2="12" />
+          <line x1="6" y1="12" x2="2" y2="12" />
+          <line x1="12" y1="6" x2="12" y2="2" />
+          <line x1="12" y1="18" x2="12" y2="22" />
+          <circle cx="12" cy="12" r="1.5" fill="#6366F1" stroke="none" />
+        </svg>
+        <span class="wordmark"> Premise </span>
+      </div>
+
+      <!-- Center tagline -->
+      <div class="center">
+        <div class="eyebrow">AI Technical Scoping</div>
+        <div class="tagline">Brief in.<br /><em>Scope out.</em></div>
+        <div class="divider"></div>
+        <div class="sub">For design agencies</div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="bottom">
+        <div class="bottom-left">usepremise.app</div>
+      </div>
+    </div>
+  </body>
+</html>
