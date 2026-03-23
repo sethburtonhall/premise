@@ -61,8 +61,16 @@ export default async function DashboardPage() {
                 Free · {remaining} scope{remaining !== 1 ? "s" : ""} left
               </Badge>
             )}
-            {isPro && (
-              <Badge className="text-xs hidden sm:inline-flex">Pro</Badge>
+            {isPro &&
+              !(sessionClaims as SessionClaims)?.metadata?.special_access ===
+                true && (
+                <Badge className="text-xs hidden sm:inline-flex">Pro</Badge>
+              )}
+            {(sessionClaims as SessionClaims)?.metadata?.special_access ===
+              true && (
+              <Badge className="text-xs hidden sm:inline-flex bg-green-500/10 text-green-600 border-green-500/20">
+                Special Access
+              </Badge>
             )}
             <UserButton />
           </div>
