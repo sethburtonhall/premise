@@ -11,6 +11,7 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { ExportPdfButton } from "@/components/export-pdf-button";
 import { DeleteScopeButton } from "@/components/delete-scope-button";
 import type { Scope } from "@/lib/supabase";
+import type { SessionClaims } from "@/types/auth";
 
 const PLATFORM_LABELS: Record<string, string> = {
   "web-app": "Web app",
@@ -35,8 +36,10 @@ export default async function ScopePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { userId, has } = await auth();
-  const isPro = has({ plan: "pro" });
+  const { userId, has, sessionClaims } = await auth();
+  const isPro =
+    has({ plan: "pro" }) ||
+    (sessionClaims as SessionClaims)?.metadata?.special_access === true;
 
   const supabase = createServerClient();
   const { data: scope } = await supabase
