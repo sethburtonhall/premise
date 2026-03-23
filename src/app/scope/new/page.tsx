@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useCompletion } from "@ai-sdk/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import type { ScopeInput } from "@/lib/supabase";
 
 const BUDGET_OPTIONS = [
@@ -57,6 +59,17 @@ const TEAM_OPTIONS = [
   { value: "internal-team", label: "Internal team planning" },
 ];
 
+function AnimatedDots() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((c) => (c === 3 ? 0 : c + 1));
+    }, 400);
+    return () => clearInterval(interval);
+  }, []);
+  return <span className="inline-block w-4">{".".repeat(count)}</span>;
+}
+
 export default function NewScopePage() {
   const router = useRouter();
   const [formData, setFormData] = useState<ScopeInput>({
@@ -72,6 +85,7 @@ export default function NewScopePage() {
 
   const { complete, completion, isLoading, error } = useCompletion({
     api: "/api/scope",
+    streamProtocol: "text",
     onFinish: async (_prompt, completionText) => {
       if (!completionText) return;
       setIsSaving(true);
@@ -128,12 +142,15 @@ export default function NewScopePage() {
       <nav className="border-b border-border">
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
           <Logo />
-          <Link
-            href="/dashboard"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            ← Dashboard
-          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/dashboard"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ← Dashboard
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -142,8 +159,8 @@ export default function NewScopePage() {
           <h1 className="text-2xl font-bold tracking-tight mb-2">
             New scope
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Describe the project and we&apos;ll generate a technical scope ready for your proposal.
+          <p className="text-muted-foreground">
+            Describe the brief. We&apos;ll write the technical section.
           </p>
         </div>
 
@@ -158,7 +175,7 @@ export default function NewScopePage() {
               <Textarea
                 id="description"
                 placeholder="Describe the project. What does it do? Who is it for? What problem does it solve? Include any requirements you know about."
-                className="min-h-[180px] resize-none font-mono text-sm"
+                className="min-h-[180px] resize-none"
                 value={formData.description}
                 onChange={(e) =>
                   setFormData((p) => ({ ...p, description: e.target.value }))
@@ -167,7 +184,7 @@ export default function NewScopePage() {
               />
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4 max-w-lg">
               <div className="space-y-2">
                 <Label>Budget range</Label>
                 <Select
@@ -269,8 +286,7 @@ export default function NewScopePage() {
                 <h2 className="font-semibold text-sm">
                   {isLoading ? (
                     <span className="text-muted-foreground">
-                      Generating scope
-                      <span className="animate-pulse">…</span>
+                      Writing your scope <AnimatedDots />
                     </span>
                   ) : (
                     "Your scope"
@@ -301,11 +317,8 @@ export default function NewScopePage() {
                   </div>
                 )}
               </div>
-              <div className="border border-border rounded-lg p-6 bg-card font-mono text-sm leading-relaxed whitespace-pre-wrap text-foreground/90 max-h-[600px] overflow-y-auto">
-                {completion}
-                {isLoading && (
-                  <span className="inline-block w-1.5 h-4 bg-primary animate-pulse ml-0.5 align-text-bottom" />
-                )}
+              <div className="border border-border rounded-lg p-6 bg-card max-h-[600px] overflow-y-auto">
+                <MarkdownRenderer content={completion} cursor={isLoading} />
               </div>
             </div>
           )}
@@ -318,8 +331,8 @@ export default function NewScopePage() {
           <DialogHeader>
             <DialogTitle>You&apos;ve used your free scopes</DialogTitle>
             <DialogDescription className="pt-2">
-              Upgrade to Premise Pro for unlimited scopes, saved history, and
-              PDF export — for just $19/month.
+              Upgrade to keep generating. Every proposal your agency sends
+              deserves a proper technical scope.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 mt-2">
@@ -337,7 +350,7 @@ export default function NewScopePage() {
               ))}
             </ul>
             <div className="flex gap-3 pt-2">
-              <Button className="flex-1">Upgrade to Pro — $19/mo</Button>
+              <Button className="flex-1" onClick={() => router.push("/upgrade")}>Upgrade to Pro — $29/mo</Button>
               <Button
                 variant="outline"
                 onClick={() => setShowUpgradeModal(false)}

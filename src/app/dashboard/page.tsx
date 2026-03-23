@@ -1,18 +1,36 @@
 import Link from "next/link";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/button-link";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { createServerClient } from "@/lib/supabase";
 import { FREE_SCOPE_LIMIT } from "@/lib/usage";
+import { DeleteScopeButton } from "@/components/delete-scope-button";
 import type { Scope } from "@/lib/supabase";
 
+const PLATFORM_LABELS: Record<string, string> = {
+  "web-app": "Web app",
+  "marketing-site": "Marketing site",
+  "mobile-app": "Mobile app",
+  ecommerce: "E-commerce",
+  "api-backend": "API / backend",
+  other: "Other",
+};
+
+const BUDGET_LABELS: Record<string, string> = {
+  "under-10k": "Under $10k",
+  "10k-50k": "$10k–$50k",
+  "50k-100k": "$50k–$100k",
+  "100k-plus": "$100k+",
+  unknown: "Budget TBD",
+};
+
 export default async function DashboardPage() {
-  const { userId } = await auth();
-  const user = await currentUser();
-  const isPro = user?.publicMetadata?.plan === "pro";
+  const { userId, has } = await auth();
+  const isPro = has({ plan: "pro" });
 
   const supabase = createServerClient();
   const { data: scopes } = await supabase
@@ -30,9 +48,13 @@ export default async function DashboardPage() {
       <nav className="border-b border-border">
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
           <Logo />
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
             {!isPro && (
-              <Badge variant="secondary" className="text-xs hidden sm:inline-flex">
+              <Badge
+                variant="secondary"
+                className="text-xs hidden sm:inline-flex"
+              >
                 Free · {remaining} scope{remaining !== 1 ? "s" : ""} left
               </Badge>
             )}
@@ -47,7 +69,9 @@ export default async function DashboardPage() {
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-12">
         <div className="flex items-center justify-between mb-10">
           <h1 className="text-2xl font-bold tracking-tight">Your scopes</h1>
-          <ButtonLink href="/scope/new">New scope</ButtonLink>
+          {scopeCount > 0 && (
+            <ButtonLink href="/scope/new">New scope</ButtonLink>
+          )}
         </div>
 
         {scopes && scopes.length > 0 ? (
@@ -60,11 +84,22 @@ export default async function DashboardPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+                    <p className="font-medium truncate group-hover:text-primary transition-colors">
                       {scope.title || "Untitled scope"}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {scope.input?.platform} · {scope.input?.budget} ·{" "}
+                      {scope.input?.platform
+                        ? (PLATFORM_LABELS[scope.input.platform] ??
+                          scope.input.platform)
+                        : null}
+                      {scope.input?.platform && scope.input?.budget
+                        ? " · "
+                        : null}
+                      {scope.input?.budget
+                        ? (BUDGET_LABELS[scope.input.budget] ??
+                          scope.input.budget)
+                        : null}
+                      {" · "}
                       {new Date(scope.created_at).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -72,17 +107,26 @@ export default async function DashboardPage() {
                       })}
                     </p>
                   </div>
-                  <span className="text-muted-foreground text-xs shrink-0 mt-0.5">
-                    View →
-                  </span>
+                  <div className="flex items-center gap-3 shrink-0 mt-0.5">
+                    {isPro && (
+                      <DeleteScopeButton
+                        scopeId={scope.id}
+                        scopeTitle={scope.title || "Untitled scope"}
+                      />
+                    )}
+                    <span className="text-muted-foreground text-xs">View →</span>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
         ) : (
-          <div className="border border-dashed border-border rounded-xl p-16 text-center">
-            <p className="text-muted-foreground text-sm mb-6">
-              No scopes yet. Generate your first one in seconds.
+          <div className="border border-dashed border-border rounded-xl p-12 text-center">
+            <p className="text-muted-foreground text-base mb-1">
+              Your next proposal is waiting.
+            </p>
+            <p className="text-muted-foreground text-base mb-6">
+              Paste a client brief and get a technical scope in seconds.
             </p>
             <ButtonLink href="/scope/new">Generate a scope</ButtonLink>
           </div>
@@ -92,14 +136,14 @@ export default async function DashboardPage() {
           <div className="mt-12 border border-primary/30 rounded-xl p-6 bg-primary/5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <p className="font-semibold text-sm">Upgrade to Pro</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Unlimited scopes, saved history, and PDF export for $19/mo.
+                <p className="font-semibold text-base">Upgrade to Pro</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Every proposal deserves a proper technical scope.
                 </p>
               </div>
-              <Button size="sm" className="shrink-0">
-                Upgrade — $19/mo
-              </Button>
+              <ButtonLink href="/upgrade" size="sm" className="shrink-0">
+                Upgrade — $29/mo
+              </ButtonLink>
             </div>
           </div>
         )}

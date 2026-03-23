@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -31,27 +32,49 @@
   --radius-xl: calc(var(--radius) * 1.4);
 }
 
-/* Premise — dark-first brand */
+/* Premise — light mode */
 :root {
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.10 0.01 280);
+  --card: oklch(0.97 0.002 280);
+  --card-foreground: oklch(0.10 0.01 280);
+  --popover: oklch(0.99 0 0);
+  --popover-foreground: oklch(0.10 0.01 280);
+  --primary: oklch(0.56 0.20 264);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.94 0.003 280);
+  --secondary-foreground: oklch(0.10 0.01 280);
+  --muted: oklch(0.94 0.003 280);
+  --muted-foreground: oklch(0.48 0.01 280);
+  --accent: oklch(0.94 0.003 280);
+  --accent-foreground: oklch(0.10 0.01 280);
+  --destructive: oklch(0.58 0.22 25);
+  --border: oklch(0.88 0.005 280);
+  --input: oklch(0.88 0.005 280);
+  --ring: oklch(0.56 0.20 264);
+  --radius: 0.5rem;
+}
+
+/* Premise — dark mode */
+.dark {
   --background: oklch(0.07 0.012 280);
-  --foreground: oklch(0.93 0.005 280);
-  --card: oklch(0.10 0.012 280);
-  --card-foreground: oklch(0.93 0.005 280);
-  --popover: oklch(0.10 0.012 280);
-  --popover-foreground: oklch(0.93 0.005 280);
+  --foreground: oklch(0.96 0.005 280);
+  --card: oklch(0.14 0.018 280);
+  --card-foreground: oklch(0.96 0.005 280);
+  --popover: oklch(0.14 0.018 280);
+  --popover-foreground: oklch(0.96 0.005 280);
   --primary: oklch(0.60 0.20 264);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.15 0.015 280);
-  --secondary-foreground: oklch(0.93 0.005 280);
-  --muted: oklch(0.14 0.012 280);
-  --muted-foreground: oklch(0.58 0.015 280);
-  --accent: oklch(0.15 0.015 280);
-  --accent-foreground: oklch(0.93 0.005 280);
+  --secondary: oklch(0.22 0.020 280);
+  --secondary-foreground: oklch(0.96 0.005 280);
+  --muted: oklch(0.18 0.016 280);
+  --muted-foreground: oklch(0.64 0.015 280);
+  --accent: oklch(0.22 0.020 280);
+  --accent-foreground: oklch(0.96 0.005 280);
   --destructive: oklch(0.65 0.22 25);
-  --border: oklch(0.18 0.015 280);
-  --input: oklch(0.16 0.012 280);
+  --border: oklch(0.28 0.020 280);
+  --input: oklch(0.22 0.018 280);
   --ring: oklch(0.60 0.20 264);
-  --radius: 0.5rem;
 }
 
 @layer base {
@@ -60,5 +83,56 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@media print {
+  @page {
+    margin: 1.5cm 2cm;
+    size: A4;
+  }
+
+  /* Force white background and black text for print */
+  .print-document,
+  .print-document * {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Keep indigo for the logo */
+  .print-document svg [stroke="#6366F1"] {
+    stroke: #6366F1 !important;
+  }
+
+  /* Keep border colors */
+  .print-document .border-zinc-200 {
+    border-color: #e4e4e7 !important;
+  }
+
+  /* Avoid page breaks inside sections */
+  .print-content h2 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .print-content p,
+  .print-content li,
+  .print-content tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Table borders in print */
+  .print-content table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .print-content th,
+  .print-content td {
+    border: 1px solid #e4e4e7 !important;
+    padding: 6px 10px !important;
   }
 }

@@ -7,22 +7,44 @@ When given a project brief, you produce a clear, confident technical scope docum
 Your output must follow this exact markdown structure with these section headings:
 
 ## Recommended Stack
-Recommend specific technologies with brief, plain-English reasoning for each choice. Assume a modern web-first workflow (Next.js, Supabase, Vercel, etc. where appropriate). Be opinionated. Do not list every possible option — choose the right one and say why.
+List each technology on its own line using this exact format:
+**Technology Name** — One or two sentences explaining why this specific tool is the right choice for this project.
+Be opinionated. Do not hedge or list alternatives. Choose the right tool and say why. Assume a modern web-first workflow (Next.js, Supabase, Vercel, etc.) unless the brief clearly requires otherwise. For UI, always include shadcn/ui as the component foundation. Only add Framer Motion if the brief specifically calls for rich animation or motion design.
 
 ## Phase Breakdown
-A markdown table with columns: | Phase | Description | Est. Weeks |
-Include: Discovery, Design, Development, Launch. Add additional phases only if truly necessary. Be realistic with estimates — do not over-promise.
+A markdown table with columns: | Phase | Description | Est. Weeks | Est. Cost (USD) |
+Populate Est. Cost (USD) based on the budget range provided, distributing it realistically across phases. Use ranges (e.g. $8,000–$12,000). If budget is unknown, omit the cost column.
+Include: Discovery, Design, Development, QA & Launch. Add phases only if genuinely necessary. Be conservative with time estimates — experienced teams consistently underestimate complexity.
 
 ## Technical Risks
-A numbered list of 3–5 specific, honest technical risks for this project. Each risk should be 1–2 sentences. Be direct — this is where experienced judgment shows.
+A numbered list of 3–5 specific, honest technical risks for this project. Format each as:
+**Risk title.** One to two sentences explaining the risk and what to do about it.
+Be direct — this is where experienced judgment shows. Flag real problems, not generic concerns.
 
 ## Suggested Team
-A short bulleted list of the roles needed to deliver this project, with 1-line notes on what each role does. Keep it lean.
+A short bulleted list of roles needed to deliver this project:
+**Role Title** — One line on what this person owns on the project.
+Keep it lean. Only include roles genuinely required, not a full agency org chart.
+
+## Assumptions & Exclusions
+Two clearly labelled sub-lists:
+**Assumptions** — bullet list of what this scope takes as given (e.g. client provides brand assets, existing data is exportable, no legacy system integrations beyond what is stated).
+**Exclusions** — bullet list of what is explicitly not included in this scope (e.g. native mobile apps, multilingual support, third-party API development, content creation, post-launch support).
+Be specific to this project — not generic boilerplate. These protect the agency from scope creep and should reflect real ambiguities in the brief.
+
+## Post-Launch Costs
+A short bulleted list of estimated monthly infrastructure and service costs the client should budget for after launch. Format each as:
+**Service** — $X–$Y/month — one sentence on what it covers.
+Include only services actually used in the recommended stack. Give realistic ranges based on expected usage at launch scale. Add a brief total range line at the end.
 
 ## Recommended Next Steps
-Exactly 3 concrete next actions to kick off this project. Be specific — not generic like "define requirements."
+Exactly 3 concrete next actions the agency should take immediately. Be specific — not generic like "define requirements." Each step should be something that can be acted on this week.
 
-Do not add any text before or after these sections. Do not use headers other than the ones listed. Be concise but complete.`;
+Rules:
+- All currency must be in USD.
+- Do not add any text before or after these seven sections.
+- Do not use section headers other than the seven listed above.
+- Be concise but complete. Every sentence should earn its place.`;
 
 export function buildScopePrompt(input: ScopeInput): string {
   return `Project Description:
