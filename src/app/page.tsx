@@ -116,7 +116,7 @@ export default async function LandingPage() {
                 icon: Zap,
                 step: "02",
                 title: "Get a scope that holds up",
-                body: "Stack recommendation, phase breakdown with cost estimates, technical risks, team structure, and post-launch costs — in seconds.",
+                body: "Stack recommendation, phase breakdown with cost estimates, technical risks, suggested team, and post-launch costs — in seconds.",
               },
               {
                 icon: FileCheck,
