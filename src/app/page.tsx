@@ -59,7 +59,8 @@ export default async function LandingPage() {
         <p className="text-lg text-muted-foreground max-w-xl mb-10 leading-relaxed">
           Most design agencies don&apos;t have a technical lead on staff.
           Premise is the next best thing — paste a client brief and get back a
-          complete technical scope, ready for your proposal, in under a minute.
+          complete technical scope, ready for your proposal, in under a minute —
+          then know exactly who to hire to deliver it.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <ButtonLink href="/sign-up" size="lg" className="px-8">

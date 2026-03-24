@@ -6,7 +6,7 @@ export default function SignUpPage() {
       <p className="text-sm text-muted-foreground">
         Brief in. Scope out. 2 free scopes — no card required.
       </p>
-      <SignUp forceRedirectUrl="/scope/new" />
+      <SignUp forceRedirectUrl="/dashboard" />
     </div>
   );
 }
