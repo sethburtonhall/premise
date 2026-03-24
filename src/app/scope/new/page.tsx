@@ -52,6 +52,15 @@ const PLATFORM_OPTIONS = [
   { value: "other", label: "Other" },
 ];
 
+const EXAMPLE_BRIEF: ScopeInput = {
+  description:
+    "A boutique fitness studio wants a booking and membership platform. Members should be able to browse class schedules, book spots, manage their membership tier (drop-in, monthly, unlimited), and receive automated reminders. Studio staff need an admin view to manage classes, view attendance, and process refunds. Stripe for payments. The studio currently uses Mindbody but wants to move off it.",
+  budget: "10k-50k",
+  timeline: "3-6-months",
+  platform: "web-app",
+  teamContext: "agency-pitching",
+};
+
 const TEAM_OPTIONS = [
   { value: "agency-pitching", label: "Agency pitching to a client" },
   { value: "agency-kicking-off", label: "Agency kicking off a project" },
@@ -82,11 +91,13 @@ export default function NewScopePage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [generationFailed, setGenerationFailed] = useState(false);
 
-  const { complete, completion, isLoading, error } = useCompletion({
+  const { complete, completion, isLoading } = useCompletion({
     api: "/api/scope",
     streamProtocol: "text",
     onFinish: async (_prompt, completionText) => {
+      setGenerationFailed(false);
       if (!completionText) return;
       setIsSaving(true);
       try {
@@ -100,7 +111,7 @@ export default function NewScopePage() {
           setSavedId(id);
         }
       } catch {
-        // Non-critical — scope still shown even if save fails
+        toast.warning("Scope generated but couldn't be saved. Copy it now to keep it.");
       } finally {
         setIsSaving(false);
       }
@@ -115,6 +126,7 @@ export default function NewScopePage() {
       } catch {
         // fall through to generic error
       }
+      setGenerationFailed(true);
       toast.error("Something went wrong. Please try again.");
     },
   });
@@ -126,7 +138,12 @@ export default function NewScopePage() {
       return;
     }
     setSavedId(null);
+    setGenerationFailed(false);
     await complete("", { body: formData });
+  };
+
+  const loadExample = () => {
+    setFormData(EXAMPLE_BRIEF);
   };
 
   const handleCopy = () => {
@@ -168,10 +185,19 @@ export default function NewScopePage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="description">
-                Project description{" "}
-                <span className="text-destructive">*</span>
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="description">
+                  Project description{" "}
+                  <span className="text-destructive">*</span>
+                </Label>
+                <button
+                  type="button"
+                  onClick={loadExample}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Try an example ↗
+                </button>
+              </div>
               <Textarea
                 id="description"
                 placeholder="Describe the project. What does it do? Who is it for? What problem does it solve? Include any requirements you know about."
@@ -270,13 +296,20 @@ export default function NewScopePage() {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              disabled={isLoading || !formData.description.trim()}
-              className="w-full sm:w-auto"
-            >
-              {isLoading ? "Generating…" : "Generate scope"}
-            </Button>
+            <div className="space-y-3">
+              <Button
+                type="submit"
+                disabled={isLoading || !formData.description.trim()}
+                className="w-full sm:w-auto"
+              >
+                {isLoading ? "Generating…" : "Generate scope"}
+              </Button>
+              {generationFailed && !hasOutput && (
+                <p className="text-sm text-destructive">
+                  Generation failed. Please check your connection and try again.
+                </p>
+              )}
+            </div>
           </form>
 
           {/* Output */}
@@ -317,6 +350,11 @@ export default function NewScopePage() {
                   </div>
                 )}
               </div>
+              {generationFailed && hasOutput && (
+                <div className="text-xs text-destructive/80 bg-destructive/10 border border-destructive/20 rounded px-3 py-2">
+                  Generation was interrupted — this scope may be incomplete. Try again to regenerate.
+                </div>
+              )}
               <div className="border border-border rounded-lg p-6 bg-card max-h-[600px] overflow-y-auto">
                 <MarkdownRenderer content={completion} cursor={isLoading} />
               </div>

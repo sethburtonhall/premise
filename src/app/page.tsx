@@ -134,7 +134,6 @@ export default async function LandingPage() {
                 <div className="text-xs font-mono text-muted-foreground mb-2 tracking-widest">
                   {step}
                 </div>
-                <div className="text-xs font-mono text-muted-foreground mb-2 tracking-widest">{step}</div>
                 <h3 className="font-semibold mb-2">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {body}
