@@ -107,7 +107,7 @@ Please generate a technical scope document for this project.`;
 
 export function extractTitle(description: string): string {
   // Take first sentence or first 60 chars, whichever is shorter
-  const firstSentence = description.split(/[.!?\n]/)[0].trim();
+  const firstSentence = description.trim().split(/[.!?\n]/)[0].trim();
   if (firstSentence.length <= 60) return firstSentence;
   return firstSentence.slice(0, 57) + "...";
 }
