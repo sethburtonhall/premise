@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UserButton } from "@clerk/nextjs";
 import { Badge } from "@/components/ui/badge";
 import { createServerClient } from "@/lib/supabase";
+import { canGenerateScope } from "@/lib/usage";
 import { CopyButton } from "@/components/copy-button";
 import { ButtonLink } from "@/components/button-link";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
@@ -20,6 +21,7 @@ const PLATFORM_LABELS: Record<string, string> = {
   ecommerce: "E-commerce",
   "api-backend": "API / backend",
   other: "Other",
+  unknown: "Platform TBD",
 };
 
 const BUDGET_LABELS: Record<string, string> = {
@@ -52,6 +54,7 @@ export default async function ScopePage({
   if (!scope) notFound();
 
   const s = scope as Scope;
+  const { allowed: canGenerate } = await canGenerateScope(userId!, isPro);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -61,12 +64,10 @@ export default async function ScopePage({
           <Logo />
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link
-              href="/dashboard"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <ButtonLink href="/dashboard" variant="outline" size="sm">
               ← Dashboard
-            </Link>
+            </ButtonLink>
+            <UserButton />
           </div>
         </div>
       </nav>
@@ -114,12 +115,14 @@ export default async function ScopePage({
         <div className="flex items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-2">
             <CopyButton text={s.output} />
-            <ExportPdfButton scopeId={s.id} />
+            {isPro && <ExportPdfButton scopeId={s.id} />}
           </div>
           <div className="flex items-center gap-2 group">
-            <ButtonLink href="/scope/new" size="sm" variant="ghost">
-              + New scope
-            </ButtonLink>
+            {canGenerate && (
+              <ButtonLink href="/scope/new" size="sm" variant="ghost">
+                + New scope
+              </ButtonLink>
+            )}
             {isPro && (
               <>
                 <div className="w-px h-5 bg-border" />
@@ -137,6 +140,27 @@ export default async function ScopePage({
         {/* Scope output */}
         <div className="border border-border rounded-lg p-8 bg-card">
           <MarkdownRenderer content={s.output} />
+        </div>
+
+        {/* Roadshow CTA */}
+        <div className="mt-6 border border-border rounded-lg px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium">
+              Need someone to actually build this?
+            </p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Roadshow Creative offers embedded technical leadership for
+              agencies — from scope to shipped.
+            </p>
+          </div>
+          <a
+            href="https://www.roadshowcreative.dev/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-sm font-medium underline underline-offset-4 hover:text-muted-foreground transition-colors"
+          >
+            Learn more →
+          </a>
         </div>
       </main>
     </div>

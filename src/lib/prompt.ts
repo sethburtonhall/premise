@@ -57,9 +57,9 @@ Rules:
 
 const CONTEXT_LABELS: Record<string, string> = {
   "agency-pitching": "Agency pitching to a client",
-  "agency-kickoff": "Agency kicking off a project",
-  "founder": "Founder building a product",
-  "internal": "Internal team planning",
+  "agency-kicking-off": "Agency kicking off a project",
+  "founder-building": "Founder building a product",
+  "internal-team": "Internal team planning",
 };
 
 const PLATFORM_LABELS: Record<string, string> = {
@@ -69,6 +69,7 @@ const PLATFORM_LABELS: Record<string, string> = {
   "ecommerce": "E-commerce",
   "api-backend": "API / backend only",
   "other": "Other",
+  "unknown": "Not defined yet",
 };
 
 const BUDGET_LABELS: Record<string, string> = {
@@ -76,15 +77,15 @@ const BUDGET_LABELS: Record<string, string> = {
   "10k-50k": "$10k–$50k",
   "50k-100k": "$50k–$100k",
   "100k-plus": "$100k+",
-  "unknown": "Budget unknown",
+  "unknown": "Not defined yet",
 };
 
 const TIMELINE_LABELS: Record<string, string> = {
-  "under-1-month": "Under 1 month",
-  "1-3-months": "1–3 months",
+  "asap": "ASAP / rush",
+  "1-2-months": "1–2 months",
   "3-6-months": "3–6 months",
   "6-plus-months": "6+ months",
-  "unknown": "Timeline unknown",
+  "unknown": "Flexible",
 };
 
 export function buildScopePrompt(input: ScopeInput): string {

@@ -9,7 +9,7 @@ export async function getScopeCount(userId: string): Promise<number> {
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId);
 
-  if (error) return 0;
+  if (error) throw new Error(`Failed to get scope count: ${error.message}`);
   return count ?? 0;
 }
 

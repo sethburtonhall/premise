@@ -259,7 +259,8 @@ export default async function LandingPage() {
               <ul className="space-y-3 text-sm mb-8">
                 {[
                   "Unlimited scopes",
-                  "Full scope history",
+                  "Unlimited scope history",
+                  "Delete scopes",
                   "PDF export",
                   "Priority support",
                 ].map((f) => (
@@ -299,7 +300,18 @@ export default async function LandingPage() {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <span>© {new Date().getFullYear()} Roadshow Creative</span>
+            <span>
+              © {new Date().getFullYear()}
+              <a
+                href="https://roadshowcreative.dev"
+                className="hover:text-foreground transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {" "}
+                Roadshow Creative
+              </a>
+            </span>
             <Link
               href="/terms"
               className="hover:text-foreground transition-colors"

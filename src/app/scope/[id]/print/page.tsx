@@ -1,9 +1,10 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { createServerClient } from "@/lib/supabase";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { PrintTrigger } from "@/components/print-trigger";
 import type { Scope } from "@/lib/supabase";
+import type { SessionClaims } from "@/types/auth";
 
 const PLATFORM_LABELS: Record<string, string> = {
   "web-app": "Web app",
@@ -12,6 +13,7 @@ const PLATFORM_LABELS: Record<string, string> = {
   ecommerce: "E-commerce",
   "api-backend": "API / backend",
   other: "Other",
+  unknown: "Platform TBD",
 };
 
 const BUDGET_LABELS: Record<string, string> = {
@@ -28,7 +30,13 @@ export default async function PrintScopePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { userId } = await auth();
+  const { userId, has, sessionClaims } = await auth();
+
+  const isPro =
+    has({ plan: "pro" }) ||
+    (sessionClaims as SessionClaims)?.metadata?.special_access === true;
+
+  if (!isPro) redirect(`/scope/${id}`);
 
   const supabase = createServerClient();
   const { data: scope } = await supabase

@@ -159,7 +159,7 @@ export default function PrivacyPage() {
             </h2>
             <p className="text-muted-foreground leading-relaxed">
               When you generate a scope, the project description you enter is
-              sent to Anthropic's API for processing. Do not include
+              sent to Anthropic&apos;s API for processing. Do not include
               confidential client information, personally identifiable
               information, or sensitive business data in your brief inputs. You
               are responsible for ensuring your use of Premise complies with any

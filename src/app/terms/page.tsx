@@ -67,9 +67,9 @@ export default function TermsPage() {
             <p className="text-muted-foreground leading-relaxed">
               Premise offers a free tier limited to 2 lifetime scope
               generations. The Pro plan ($29/month or $24/month billed annually)
-              provides unlimited scope generation, scope history, and PDF
-              export. Free tier limits are based on lifetime usage and are not
-              restored by deleting scopes.
+              provides unlimited scope generation, unlimited scope history, and
+              PDF export. Free tier limits are based on lifetime usage and are
+              not restored by deleting scopes.
             </p>
           </section>
 

@@ -1,29 +1,63 @@
 import { auth } from "@clerk/nextjs/server";
 import { createServerClient } from "@/lib/supabase";
 import { extractTitle } from "@/lib/prompt";
+import { canGenerateScope } from "@/lib/usage";
 import type { ScopeInput } from "@/lib/supabase";
+import type { SessionClaims } from "@/types/auth";
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
+  const { userId, has, sessionClaims } = await auth();
   if (!userId) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { input, output }: { input: ScopeInput; output: string } =
-    await req.json();
+  const isPro =
+    has({ plan: "pro" }) ||
+    (sessionClaims as SessionClaims)?.metadata?.special_access === true;
 
-  if (!output?.trim()) {
+  let allowed: boolean;
+  try {
+    ({ allowed } = await canGenerateScope(userId, isPro));
+  } catch (err) {
+    console.error("Usage check failed during save:", err);
+    return new Response("Service temporarily unavailable", { status: 503 });
+  }
+
+  if (!allowed) {
+    return new Response(
+      JSON.stringify({ error: "upgrade_required" }),
+      { status: 402, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  const body = await req.json();
+
+  const { input, output } = body ?? {};
+
+  if (typeof output !== "string" || !output.trim()) {
     return new Response("Output is required", { status: 400 });
   }
+
+  if (output.length > 50000) {
+    return new Response("Output is too long", { status: 400 });
+  }
+
+  const safeInput: ScopeInput = {
+    description: typeof input?.description === "string" ? input.description.slice(0, 5000) : "",
+    budget: typeof input?.budget === "string" ? input.budget.slice(0, 50) : "",
+    timeline: typeof input?.timeline === "string" ? input.timeline.slice(0, 50) : "",
+    platform: typeof input?.platform === "string" ? input.platform.slice(0, 50) : "",
+    teamContext: typeof input?.teamContext === "string" ? input.teamContext.slice(0, 50) : "",
+  };
 
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from("scopes")
     .insert({
       user_id: userId,
-      input,
+      input: safeInput,
       output,
-      title: extractTitle(input.description),
+      title: extractTitle(safeInput.description),
     })
     .select("id")
     .single();

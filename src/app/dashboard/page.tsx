@@ -19,6 +19,7 @@ const PLATFORM_LABELS: Record<string, string> = {
   ecommerce: "E-commerce",
   "api-backend": "API / backend",
   other: "Other",
+  unknown: "Platform TBD",
 };
 
 const BUDGET_LABELS: Record<string, string> = {
@@ -62,8 +63,7 @@ export default async function DashboardPage() {
               </Badge>
             )}
             {isPro &&
-              !(sessionClaims as SessionClaims)?.metadata?.special_access ===
-                true && (
+              !(sessionClaims as SessionClaims)?.metadata?.special_access && (
                 <Badge className="text-xs hidden sm:inline-flex">Pro</Badge>
               )}
             {(sessionClaims as SessionClaims)?.metadata?.special_access ===
@@ -80,7 +80,7 @@ export default async function DashboardPage() {
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-12">
         <div className="flex items-center justify-between mb-10">
           <h1 className="text-2xl font-bold tracking-tight">Your scopes</h1>
-          {scopeCount > 0 && (
+          {(isPro || remaining > 0) && (
             <ButtonLink href="/scope/new">New scope</ButtonLink>
           )}
         </div>

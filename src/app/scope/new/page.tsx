@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UserButton } from "@clerk/nextjs";
 import { useCompletion } from "@ai-sdk/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import type { ScopeInput } from "@/lib/supabase";
+import { ButtonLink } from "@/components/button-link";
 
 const BUDGET_OPTIONS = [
   { value: "under-10k", label: "Under $10k" },
@@ -50,6 +51,7 @@ const PLATFORM_OPTIONS = [
   { value: "ecommerce", label: "E-commerce" },
   { value: "api-backend", label: "API / backend only" },
   { value: "other", label: "Other" },
+  { value: "unknown", label: "Not defined yet" },
 ];
 
 const EXAMPLE_BRIEF: ScopeInput = {
@@ -109,9 +111,17 @@ export default function NewScopePage() {
         if (res.ok) {
           const { id } = await res.json();
           setSavedId(id);
+        } else if (res.status === 402) {
+          setShowUpgradeModal(true);
+        } else {
+          toast.warning(
+            "Scope generated but couldn't be saved. Copy it now to keep it.",
+          );
         }
       } catch {
-        toast.warning("Scope generated but couldn't be saved. Copy it now to keep it.");
+        toast.warning(
+          "Scope generated but couldn't be saved. Copy it now to keep it.",
+        );
       } finally {
         setIsSaving(false);
       }
@@ -135,6 +145,22 @@ export default function NewScopePage() {
     e.preventDefault();
     if (!formData.description.trim()) {
       toast.error("Please describe your project first.");
+      return;
+    }
+    if (!formData.budget) {
+      toast.error("Please select a budget range.");
+      return;
+    }
+    if (!formData.timeline) {
+      toast.error("Please select a timeline.");
+      return;
+    }
+    if (!formData.platform) {
+      toast.error("Please select a platform.");
+      return;
+    }
+    if (!formData.teamContext) {
+      toast.error("Please select your context.");
       return;
     }
     setSavedId(null);
@@ -161,21 +187,17 @@ export default function NewScopePage() {
           <Logo />
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link
-              href="/dashboard"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <ButtonLink href="/dashboard" variant="outline" size="sm">
               ← Dashboard
-            </Link>
+            </ButtonLink>
+            <UserButton />
           </div>
         </div>
       </nav>
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-12">
         <div className="mb-10">
-          <h1 className="text-2xl font-bold tracking-tight mb-2">
-            New scope
-          </h1>
+          <h1 className="text-2xl font-bold tracking-tight mb-2">New scope</h1>
           <p className="text-muted-foreground">
             Describe the brief. We&apos;ll write the technical section.
           </p>
@@ -327,11 +349,7 @@ export default function NewScopePage() {
                 </h2>
                 {!isLoading && (
                   <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleCopy}
-                    >
+                    <Button size="sm" variant="outline" onClick={handleCopy}>
                       Copy
                     </Button>
                     {savedId && (
@@ -352,7 +370,8 @@ export default function NewScopePage() {
               </div>
               {generationFailed && hasOutput && (
                 <div className="text-xs text-destructive/80 bg-destructive/10 border border-destructive/20 rounded px-3 py-2">
-                  Generation was interrupted — this scope may be incomplete. Try again to regenerate.
+                  Generation was interrupted — this scope may be incomplete. Try
+                  again to regenerate.
                 </div>
               )}
               <div className="border border-border rounded-lg p-6 bg-card max-h-[600px] overflow-y-auto">
@@ -377,7 +396,8 @@ export default function NewScopePage() {
             <ul className="space-y-2 text-sm">
               {[
                 "Unlimited scope generation",
-                "Full scope history & dashboard",
+                "Unlimited scope history",
+                "Delete scopes from history",
                 "Export scopes as PDF",
                 "Priority support",
               ].map((f) => (
@@ -388,7 +408,12 @@ export default function NewScopePage() {
               ))}
             </ul>
             <div className="flex gap-3 pt-2">
-              <Button className="flex-1" onClick={() => router.push("/upgrade")}>Upgrade to Pro — $29/mo</Button>
+              <Button
+                className="flex-1"
+                onClick={() => router.push("/upgrade")}
+              >
+                Upgrade to Pro — $29/mo
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowUpgradeModal(false)}
@@ -396,6 +421,18 @@ export default function NewScopePage() {
                 Not now
               </Button>
             </div>
+            <p className="text-xs text-muted-foreground text-center pt-1">
+              Or skip the tool —{" "}
+              <a
+                href="https://www.roadshowcreative.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-foreground transition-colors"
+              >
+                Roadshow Creative
+              </a>{" "}
+              handles the whole engagement.
+            </p>
           </div>
         </DialogContent>
       </Dialog>
