@@ -1,4 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { sendEvent, updateContact } from "@/lib/loops";
 import { createServerClient } from "@/lib/supabase";
 import { extractTitle } from "@/lib/prompt";
 import { canGenerateScope } from "@/lib/usage";
@@ -24,10 +25,20 @@ export async function POST(req: Request) {
   }
 
   if (!allowed) {
-    return new Response(
-      JSON.stringify({ error: "upgrade_required" }),
-      { status: 402, headers: { "Content-Type": "application/json" } },
-    );
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      const email = user.emailAddresses.find(
+        (e) => e.id === user.primaryEmailAddressId,
+      )?.emailAddress;
+      if (email) await sendEvent(email, "freeLimitReached");
+    } catch (err) {
+      console.error("Failed to fire freeLimitReached event:", err);
+    }
+    return new Response(JSON.stringify({ error: "upgrade_required" }), {
+      status: 402,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const body = await req.json();
@@ -43,11 +54,19 @@ export async function POST(req: Request) {
   }
 
   const safeInput: ScopeInput = {
-    description: typeof input?.description === "string" ? input.description.slice(0, 5000) : "",
+    description:
+      typeof input?.description === "string"
+        ? input.description.slice(0, 5000)
+        : "",
     budget: typeof input?.budget === "string" ? input.budget.slice(0, 50) : "",
-    timeline: typeof input?.timeline === "string" ? input.timeline.slice(0, 50) : "",
-    platform: typeof input?.platform === "string" ? input.platform.slice(0, 50) : "",
-    teamContext: typeof input?.teamContext === "string" ? input.teamContext.slice(0, 50) : "",
+    timeline:
+      typeof input?.timeline === "string" ? input.timeline.slice(0, 50) : "",
+    platform:
+      typeof input?.platform === "string" ? input.platform.slice(0, 50) : "",
+    teamContext:
+      typeof input?.teamContext === "string"
+        ? input.teamContext.slice(0, 50)
+        : "",
   };
 
   const supabase = createServerClient();
@@ -66,6 +85,10 @@ export async function POST(req: Request) {
     console.error("Failed to save scope:", error);
     return new Response("Failed to save scope", { status: 500 });
   }
+
+  updateContact({ userId, hasGeneratedScope: true }).catch((err) =>
+    console.error("Failed to update hasGeneratedScope:", err),
+  );
 
   return Response.json({ id: data.id });
 }

@@ -22,11 +22,12 @@ async function post(path: string, body: unknown): Promise<void> {
 }
 
 type ContactData = {
-  email: string;
+  email?: string;
   firstName?: string;
   lastName?: string;
-  userId: string;
+  userId?: string;
   userGroup?: string;
+  hasGeneratedScope?: boolean;
 };
 
 export async function createContact(data: ContactData): Promise<void> {
