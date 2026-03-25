@@ -44,5 +44,18 @@ export async function POST(req: NextRequest) {
     if (data.id) await deleteContact({ userId: data.id });
   }
 
+  if (type === "subscription.created" || type === "subscription.updated") {
+    const email = data.payer?.email;
+    const userId = data.payer?.user_id;
+    if (email && userId) {
+      const isActive = data.status === "active";
+      await updateContact({
+        email,
+        userId,
+        userGroup: isActive ? "pro" : "free",
+      });
+    }
+  }
+
   return new Response("OK", { status: 200 });
 }
