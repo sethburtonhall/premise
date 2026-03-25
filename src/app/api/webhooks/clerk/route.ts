@@ -1,6 +1,6 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
-import { upsertContact, deleteContact, sendEvent } from "@/lib/loops";
+import { createContact, updateContact, deleteContact, sendEvent } from "@/lib/loops";
 
 export async function POST(req: NextRequest) {
   let evt: Awaited<ReturnType<typeof verifyWebhook>>;
@@ -13,21 +13,31 @@ export async function POST(req: NextRequest) {
 
   const { type, data } = evt;
 
-  if (type === "user.created" || type === "user.updated") {
+  if (type === "user.created") {
     const email = data.email_addresses?.[0]?.email_address;
     if (!email) return new Response("OK", { status: 200 });
 
-    await upsertContact({
+    await createContact({
       email,
       firstName: data.first_name ?? undefined,
       lastName: data.last_name ?? undefined,
       userId: data.id,
-      userGroup: type === "user.created" ? "free" : undefined,
+      userGroup: "free",
     });
 
-    if (type === "user.created") {
-      await sendEvent(email, "userSignedUp");
-    }
+    await sendEvent(email, "userSignedUp");
+  }
+
+  if (type === "user.updated") {
+    const email = data.email_addresses?.[0]?.email_address;
+    if (!email) return new Response("OK", { status: 200 });
+
+    await updateContact({
+      email,
+      firstName: data.first_name ?? undefined,
+      lastName: data.last_name ?? undefined,
+      userId: data.id,
+    });
   }
 
   if (type === "user.deleted") {

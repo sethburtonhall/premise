@@ -21,14 +21,20 @@ async function post(path: string, body: unknown): Promise<void> {
   }
 }
 
-export async function upsertContact(data: {
+type ContactData = {
   email: string;
   firstName?: string;
   lastName?: string;
   userId: string;
   userGroup?: string;
-}): Promise<void> {
+};
+
+export async function createContact(data: ContactData): Promise<void> {
   await post("/contacts/create", data);
+}
+
+export async function updateContact(data: ContactData): Promise<void> {
+  await post("/contacts/update", data);
 }
 
 export async function deleteContact(
