@@ -35,23 +35,23 @@
 /* Premise — light mode */
 :root {
   --background: oklch(0.99 0 0);
-  --foreground: oklch(0.10 0.01 280);
+  --foreground: oklch(0.1 0.01 280);
   --card: oklch(0.97 0.002 280);
-  --card-foreground: oklch(0.10 0.01 280);
+  --card-foreground: oklch(0.1 0.01 280);
   --popover: oklch(0.99 0 0);
-  --popover-foreground: oklch(0.10 0.01 280);
-  --primary: oklch(0.56 0.20 264);
+  --popover-foreground: oklch(0.1 0.01 280);
+  --primary: oklch(0.56 0.2 264);
   --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.94 0.003 280);
-  --secondary-foreground: oklch(0.10 0.01 280);
+  --secondary-foreground: oklch(0.1 0.01 280);
   --muted: oklch(0.94 0.003 280);
   --muted-foreground: oklch(0.48 0.01 280);
   --accent: oklch(0.94 0.003 280);
-  --accent-foreground: oklch(0.10 0.01 280);
+  --accent-foreground: oklch(0.1 0.01 280);
   --destructive: oklch(0.58 0.22 25);
   --border: oklch(0.88 0.005 280);
   --input: oklch(0.88 0.005 280);
-  --ring: oklch(0.56 0.20 264);
+  --ring: oklch(0.56 0.2 264);
   --radius: 0.5rem;
 }
 
@@ -63,18 +63,18 @@
   --card-foreground: oklch(0.96 0.005 280);
   --popover: oklch(0.14 0.018 280);
   --popover-foreground: oklch(0.96 0.005 280);
-  --primary: oklch(0.60 0.20 264);
+  --primary: oklch(0.6 0.2 264);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.22 0.020 280);
+  --secondary: oklch(0.22 0.02 280);
   --secondary-foreground: oklch(0.96 0.005 280);
   --muted: oklch(0.18 0.016 280);
   --muted-foreground: oklch(0.64 0.015 280);
-  --accent: oklch(0.22 0.020 280);
+  --accent: oklch(0.22 0.02 280);
   --accent-foreground: oklch(0.96 0.005 280);
   --destructive: oklch(0.65 0.22 25);
-  --border: oklch(0.28 0.020 280);
+  --border: oklch(0.28 0.02 280);
   --input: oklch(0.22 0.018 280);
-  --ring: oklch(0.60 0.20 264);
+  --ring: oklch(0.6 0.2 264);
 }
 
 @layer base {
@@ -103,7 +103,7 @@
 
   /* Keep indigo for the logo */
   .print-document svg [stroke="#6366F1"] {
-    stroke: #6366F1 !important;
+    stroke: #6366f1 !important;
   }
 
   /* Keep border colors */
@@ -135,4 +135,14 @@
     border: 1px solid #e4e4e7 !important;
     padding: 6px 10px !important;
   }
+}
+
+/* Clerk UI overrides */
+
+.cl-logoBox {
+  @apply h-12 rounded-2xl;
+}
+
+.cl-logoImage {
+  @apply rounded-lg;
 }
