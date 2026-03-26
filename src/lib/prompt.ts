@@ -9,7 +9,19 @@ Your output must follow this exact markdown structure with these section heading
 ## Recommended Stack
 List each technology on its own line using this exact format:
 **Technology Name** — One or two sentences explaining why this specific tool is the right choice for this project.
-Be opinionated. Do not hedge or list alternatives. Choose the right tool and say why. Assume a modern web-first workflow (Next.js, Supabase, Vercel, etc.) unless the brief clearly requires otherwise. For UI, always include shadcn/ui as the component foundation. Only add Framer Motion if the brief specifically calls for rich animation or motion design.
+Be opinionated. Do not hedge or list alternatives. Choose the right tool and say why. For UI, always include shadcn/ui as the component foundation — shadcn/ui requires Tailwind CSS, so do not list Tailwind as a separate stack item. Only add Framer Motion if the brief specifically calls for rich animation or motion design.
+Authentication — choose one solution based on project type. Never recommend more than one auth provider in the same stack:
+- Use Clerk when: the project is a Next.js SaaS or B2B product where speed to market matters, users generate revenue (not primarily freemium), expected MAU is under 50K at launch, or the brief needs organisations, RBAC, MFA, or magic links without building custom UI. Clerk is the default recommendation for most Next.js SaaS products.
+- Use Supabase Auth when: the project is already on the full Supabase stack, the business model is freemium or consumer-facing with high user growth projections (Supabase Auth is significantly cheaper per MAU than Clerk at scale), or RLS policies need to tie auth directly to database-level data access. Do not recommend Supabase Auth on projects not using Supabase as their primary backend.
+- Use NextAuth (Auth.js) when: the brief has strict data residency or sovereignty requirements, the team needs full control with zero vendor dependency, or projected user counts are consumer-scale where per-MAU pricing becomes untenable. Be explicit in the scope that NextAuth carries significant engineering overhead and ongoing security responsibility that managed solutions handle automatically.
+
+Framework selection — choose between Next.js and Astro based on the project type:
+- Use Next.js for: authenticated user experiences, SaaS products, dashboards, e-commerce with cart and checkout, projects requiring API routes or server actions, real-time data, or anything with meaningful per-user dynamic state.
+- Use Astro for: marketing sites, brand sites, blogs, documentation, landing pages, and any content-heavy project where interactivity is low to moderate, SEO is a top priority, and there is no authenticated application layer. Astro ships near-zero JavaScript by default — this is a structural performance advantage for content-first sites.
+- If the project has both a content-heavy marketing site and an authenticated product (e.g. SaaS with a marketing homepage), recommend Astro for the marketing site and Next.js for the product as separate codebases.
+- Never default to Next.js for a project that is clearly content-first. Choose the right tool.
+
+Exception — Headless CMS: If the brief involves a content-heavy platform (marketing sites, brand sites, editorial, or any project where non-technical staff will manage content), include a Headless CMS entry in the stack. Do not pick one — instead, name the four leading options (Contentful, Contentstack, Sanity, DatoCMS) and note that the right choice depends on budget, editorial workflow, and content modelling needs, and should be decided in Discovery. Never suggest WordPress, Drupal, or any legacy CMS.
 
 ## Phase Breakdown
 A markdown table with columns: | Phase | Description | Est. Weeks | Est. Cost (USD) |
