@@ -53,15 +53,20 @@ export async function POST(req: NextRequest) {
     const email = data.payer?.email;
     const userId = data.payer?.user_id;
     if (email && userId) {
+      const isPaidPlan = data.items?.some(
+        (item) => (item.plan?.amount ?? 0) > 0
+      );
+
       const userGroup =
-        data.status === "active" ? "pro" :
+        data.status === "active" && isPaidPlan ? "pro" :
         data.status === "past_due" ? "past_due" :
         "free";
       await updateContact({ email, userId, userGroup });
 
       if (
         (type === "subscription.created" || type === "subscription.active") &&
-        data.status === "active"
+        data.status === "active" &&
+        isPaidPlan
       ) {
         await sendEvent(email, "userUpgraded");
       }
