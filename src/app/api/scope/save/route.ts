@@ -2,7 +2,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { sendEvent, updateContact } from "@/lib/loops";
 import { createServerClient } from "@/lib/supabase";
 import { extractTitle } from "@/lib/prompt";
-import { canGenerateScope } from "@/lib/usage";
+import { canGenerateScope, getScopeCount, FREE_SCOPE_LIMIT } from "@/lib/usage";
 import type { ScopeInput } from "@/lib/supabase";
 import type { SessionClaims } from "@/types/auth";
 
@@ -86,9 +86,31 @@ export async function POST(req: Request) {
     return new Response("Failed to save scope", { status: 500 });
   }
 
-  updateContact({ userId, hasGeneratedScope: true }).catch((err) =>
-    console.error("Failed to update hasGeneratedScope:", err),
-  );
+  updateContact({
+    userId,
+    hasGeneratedScope: true,
+    userGroup: isPro ? "pro" : "free",
+  }).catch((err) => console.error("Failed to update hasGeneratedScope:", err));
+
+  // Check if user just reached their free limit (went from 1 to 2 scopes)
+  if (!isPro) {
+    try {
+      const count = await getScopeCount(userId);
+      if (count === FREE_SCOPE_LIMIT) {
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+        const email = user.emailAddresses.find(
+          (e) => e.id === user.primaryEmailAddressId,
+        )?.emailAddress;
+        if (email) await sendEvent(email, "freeLimitReached");
+      }
+    } catch (err) {
+      console.error(
+        "Failed to check limit or fire freeLimitReached event:",
+        err,
+      );
+    }
+  }
 
   return Response.json({ id: data.id });
 }
