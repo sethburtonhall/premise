@@ -1,9 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { createServerClient } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { PrintTrigger } from "@/components/print-trigger";
-import type { Scope } from "@/lib/supabase";
+import type { Scope } from "@/types/scope";
 import type { SessionClaims } from "@/types/auth";
 
 const PLATFORM_LABELS: Record<string, string> = {
@@ -38,13 +38,12 @@ export default async function PrintScopePage({
 
   if (!isPro) redirect(`/scope/${id}`);
 
-  const supabase = createServerClient();
-  const { data: scope } = await supabase
-    .from("scopes")
-    .select("*")
-    .eq("id", id)
-    .eq("user_id", userId!)
-    .single();
+  const scope = await prisma.scope.findFirst({
+    where: {
+      id: id,
+      userId: userId!,
+    },
+  });
 
   if (!scope) notFound();
 
@@ -55,7 +54,7 @@ export default async function PrintScopePage({
   const budget = s.input?.budget
     ? (BUDGET_LABELS[s.input.budget] ?? s.input.budget)
     : null;
-  const date = new Date(s.created_at).toLocaleDateString("en-US", {
+  const date = new Date(s.createdAt).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",

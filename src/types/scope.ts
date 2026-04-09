@@ -5,3 +5,12 @@ export interface ScopeInput {
   description?: string;
   teamContext?: string;
 }
+
+export type Scope = {
+  id: string;
+  userId: string;
+  input: ScopeInput;
+  output: string;
+  title: string | null;
+  createdAt: Date;
+};

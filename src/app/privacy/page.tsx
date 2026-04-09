@@ -101,22 +101,10 @@ export default function PrivacyPage() {
                 </a>
               </li>
               <li>
-                <strong className="text-foreground">Supabase</strong> — stores
-                your scope data in a managed PostgreSQL database hosted on AWS.{" "}
-                <a
-                  href="https://supabase.com/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Supabase Privacy Policy
-                </a>
-              </li>
-              <li>
                 <strong className="text-foreground">Anthropic</strong> —
                 processes your brief inputs to generate scope documents. Your
-                inputs are sent to Anthropic's API. Anthropic's usage policies
-                apply.{" "}
+                inputs are sent to Anthropic&apos;s API. Anthropic&apos;s usage
+                policies apply.{" "}
                 <a
                   href="https://www.anthropic.com/privacy"
                   target="_blank"

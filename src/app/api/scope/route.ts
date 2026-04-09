@@ -3,7 +3,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { auth } from "@clerk/nextjs/server";
 import { canGenerateScope } from "@/lib/usage";
 import { SCOPE_SYSTEM_PROMPT, buildScopePrompt } from "@/lib/prompt";
-import type { ScopeInput } from "@/lib/supabase";
+import type { ScopeInput } from "@/types/scope";
 import type { SessionClaims } from "@/types/auth";
 
 export const maxDuration = 60;
@@ -53,10 +53,35 @@ export async function POST(req: Request) {
     return new Response("Project description is too long", { status: 400 });
   }
 
-  const VALID_BUDGETS = ["under-10k", "10k-50k", "50k-100k", "100k-plus", "unknown"];
-  const VALID_TIMELINES = ["asap", "1-2-months", "3-6-months", "6-plus-months", "unknown"];
-  const VALID_PLATFORMS = ["web-app", "marketing-site", "mobile-app", "ecommerce", "api-backend", "other", "unknown"];
-  const VALID_CONTEXTS = ["agency-pitching", "agency-kicking-off", "founder-building", "internal-team"];
+  const VALID_BUDGETS = [
+    "under-10k",
+    "10k-50k",
+    "50k-100k",
+    "100k-plus",
+    "unknown",
+  ];
+  const VALID_TIMELINES = [
+    "asap",
+    "1-2-months",
+    "3-6-months",
+    "6-plus-months",
+    "unknown",
+  ];
+  const VALID_PLATFORMS = [
+    "web-app",
+    "marketing-site",
+    "mobile-app",
+    "ecommerce",
+    "api-backend",
+    "other",
+    "unknown",
+  ];
+  const VALID_CONTEXTS = [
+    "agency-pitching",
+    "agency-kicking-off",
+    "founder-building",
+    "internal-team",
+  ];
 
   if (!VALID_BUDGETS.includes(budget)) {
     return new Response("Budget is required", { status: 400 });

@@ -25,7 +25,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
-import type { ScopeInput } from "@/lib/supabase";
+import type { ScopeInput } from "@/types/scope";
 import { ButtonLink } from "@/components/button-link";
 
 const BUDGET_OPTIONS = [
@@ -143,7 +143,7 @@ export default function NewScopePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.description.trim()) {
+    if (!formData.description?.trim()) {
       toast.error("Please describe your project first.");
       return;
     }
@@ -321,7 +321,7 @@ export default function NewScopePage() {
             <div className="space-y-3">
               <Button
                 type="submit"
-                disabled={isLoading || !formData.description.trim()}
+                disabled={isLoading || !formData.description?.trim()}
                 className="w-full sm:w-auto"
               >
                 {isLoading ? "Generating…" : "Generate scope"}

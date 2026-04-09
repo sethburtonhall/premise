@@ -1,4 +1,4 @@
-import type { ScopeInput } from "./supabase";
+import type { ScopeInput } from "@/types/scope";
 
 export const SCOPE_SYSTEM_PROMPT = `You are a senior technical architect at a design-forward digital agency. You specialise in scoping modern web and mobile products for agency clients.
 
@@ -12,7 +12,6 @@ List each technology on its own line using this exact format:
 Be opinionated. Do not hedge or list alternatives. Choose the right tool and say why. For UI, always include shadcn/ui as the component foundation — shadcn/ui requires Tailwind CSS, so do not list Tailwind as a separate stack item. Only add Framer Motion if the brief specifically calls for rich animation or motion design.
 Authentication — choose one solution based on project type. Never recommend more than one auth provider in the same stack:
 - Use Clerk when: the project is a Next.js SaaS or B2B product where speed to market matters, users generate revenue (not primarily freemium), expected MAU is under 50K at launch, or the brief needs organisations, RBAC, MFA, or magic links without building custom UI. Clerk is the default recommendation for most Next.js SaaS products.
-- Use Supabase Auth when: the project is already on the full Supabase stack, the business model is freemium or consumer-facing with high user growth projections (Supabase Auth is significantly cheaper per MAU than Clerk at scale), or RLS policies need to tie auth directly to database-level data access. Do not recommend Supabase Auth on projects not using Supabase as their primary backend.
 - Use NextAuth (Auth.js) when: the brief has strict data residency or sovereignty requirements, the team needs full control with zero vendor dependency, or projected user counts are consumer-scale where per-MAU pricing becomes untenable. Be explicit in the scope that NextAuth carries significant engineering overhead and ongoing security responsibility that managed solutions handle automatically.
 
 Framework selection — choose between Next.js and Astro based on the project type:
@@ -78,10 +77,10 @@ const PLATFORM_LABELS: Record<string, string> = {
   "web-app": "Web application",
   "marketing-site": "Marketing / brand site",
   "mobile-app": "Mobile app",
-  "ecommerce": "E-commerce",
+  ecommerce: "E-commerce",
   "api-backend": "API / backend only",
-  "other": "Other",
-  "unknown": "Not defined yet",
+  other: "Other",
+  unknown: "Not defined yet",
 };
 
 const BUDGET_LABELS: Record<string, string> = {
@@ -89,15 +88,15 @@ const BUDGET_LABELS: Record<string, string> = {
   "10k-50k": "$10k–$50k",
   "50k-100k": "$50k–$100k",
   "100k-plus": "$100k+",
-  "unknown": "Not defined yet",
+  unknown: "Not defined yet",
 };
 
 const TIMELINE_LABELS: Record<string, string> = {
-  "asap": "ASAP / rush",
+  asap: "ASAP / rush",
   "1-2-months": "1–2 months",
   "3-6-months": "3–6 months",
   "6-plus-months": "6+ months",
-  "unknown": "Flexible",
+  unknown: "Flexible",
 };
 
 export function buildScopePrompt(input: ScopeInput): string {
@@ -119,7 +118,10 @@ Please generate a technical scope document for this project.`;
 
 export function extractTitle(description: string): string {
   // Take first sentence or first 60 chars, whichever is shorter
-  const firstSentence = description.trim().split(/[.!?\n]/)[0].trim();
+  const firstSentence = description
+    .trim()
+    .split(/[.!?\n]/)[0]
+    .trim();
   if (firstSentence.length <= 60) return firstSentence;
   return firstSentence.slice(0, 57) + "...";
 }
