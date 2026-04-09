@@ -1,9 +1,9 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { sendEvent, updateContact } from "@/lib/loops";
-import { createServerClient } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
 import { extractTitle } from "@/lib/prompt";
 import { canGenerateScope, getScopeCount, FREE_SCOPE_LIMIT } from "@/lib/usage";
-import type { ScopeInput } from "@/lib/supabase";
+import type { ScopeInput } from "@/types/scope";
 import type { SessionClaims } from "@/types/auth";
 
 export async function POST(req: Request) {
@@ -69,19 +69,21 @@ export async function POST(req: Request) {
         : "",
   };
 
-  const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from("scopes")
-    .insert({
-      user_id: userId,
-      input: safeInput,
-      output,
-      title: extractTitle(safeInput.description),
-    })
-    .select("id")
-    .single();
-
-  if (error) {
+  let scopeId: string;
+  try {
+    const data = await prisma.scope.create({
+      data: {
+        userId: userId,
+        input: safeInput as any,
+        output,
+        title: extractTitle(safeInput.description || ""),
+      },
+      select: {
+        id: true,
+      },
+    });
+    scopeId = data.id;
+  } catch (error) {
     console.error("Failed to save scope:", error);
     return new Response("Failed to save scope", { status: 500 });
   }
@@ -112,5 +114,5 @@ export async function POST(req: Request) {
     }
   }
 
-  return Response.json({ id: data.id });
+  return Response.json({ id: scopeId });
 }

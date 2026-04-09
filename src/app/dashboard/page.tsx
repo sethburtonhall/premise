@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/button-link";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { createServerClient } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
 import { FREE_SCOPE_LIMIT } from "@/lib/usage";
 import { DeleteScopeButton } from "@/components/delete-scope-button";
-import type { Scope } from "@/lib/supabase";
+import type { Scope } from "@/generated/prisma/client";
+import type { ScopeInput } from "@/types/scope";
 import type { SessionClaims } from "@/types/auth";
 
 const PLATFORM_LABELS: Record<string, string> = {
@@ -36,12 +37,20 @@ export default async function DashboardPage() {
     has({ plan: "pro" }) ||
     (sessionClaims as SessionClaims)?.metadata?.special_access === true;
 
-  const supabase = createServerClient();
-  const { data: scopes } = await supabase
-    .from("scopes")
-    .select("id, title, created_at, input")
-    .eq("user_id", userId!)
-    .order("created_at", { ascending: false });
+  const scopes = await prisma.scope.findMany({
+    where: {
+      userId: userId!,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      input: true,
+    },
+  });
 
   const scopeCount = scopes?.length ?? 0;
   const remaining = Math.max(0, FREE_SCOPE_LIMIT - scopeCount);
@@ -99,19 +108,21 @@ export default async function DashboardPage() {
                       {scope.title || "Untitled scope"}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {scope.input?.platform
-                        ? (PLATFORM_LABELS[scope.input.platform] ??
-                          scope.input.platform)
+                      {(scope.input as ScopeInput)?.platform
+                        ? (PLATFORM_LABELS[
+                            (scope.input as ScopeInput).platform!
+                          ] ?? (scope.input as ScopeInput).platform)
                         : null}
-                      {scope.input?.platform && scope.input?.budget
+                      {(scope.input as ScopeInput)?.platform &&
+                      (scope.input as ScopeInput)?.budget
                         ? " · "
                         : null}
-                      {scope.input?.budget
-                        ? (BUDGET_LABELS[scope.input.budget] ??
-                          scope.input.budget)
+                      {(scope.input as ScopeInput)?.budget
+                        ? (BUDGET_LABELS[(scope.input as ScopeInput).budget!] ??
+                          (scope.input as ScopeInput).budget)
                         : null}
                       {" · "}
-                      {new Date(scope.created_at).toLocaleDateString("en-US", {
+                      {new Date(scope.createdAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",

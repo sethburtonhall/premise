@@ -4,14 +4,15 @@ import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserButton } from "@clerk/nextjs";
 import { Badge } from "@/components/ui/badge";
-import { createServerClient } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
 import { canGenerateScope } from "@/lib/usage";
 import { CopyButton } from "@/components/copy-button";
 import { ButtonLink } from "@/components/button-link";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { ExportPdfButton } from "@/components/export-pdf-button";
 import { DeleteScopeButton } from "@/components/delete-scope-button";
-import type { Scope } from "@/lib/supabase";
+import type { Scope } from "@/generated/prisma/client";
+import type { ScopeInput } from "@/types/scope";
 import type { SessionClaims } from "@/types/auth";
 
 const PLATFORM_LABELS: Record<string, string> = {
@@ -43,13 +44,12 @@ export default async function ScopePage({
     has({ plan: "pro" }) ||
     (sessionClaims as SessionClaims)?.metadata?.special_access === true;
 
-  const supabase = createServerClient();
-  const { data: scope } = await supabase
-    .from("scopes")
-    .select("*")
-    .eq("id", id)
-    .eq("user_id", userId!)
-    .single();
+  const scope = await prisma.scope.findFirst({
+    where: {
+      id: id,
+      userId: userId!,
+    },
+  });
 
   if (!scope) notFound();
 
@@ -79,18 +79,20 @@ export default async function ScopePage({
             {s.title || "Technical Scope"}
           </h1>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            {s.input?.platform && (
+            {(s.input as ScopeInput)?.platform && (
               <Badge variant="secondary">
-                {PLATFORM_LABELS[s.input.platform] ?? s.input.platform}
+                {PLATFORM_LABELS[(s.input as ScopeInput).platform!] ??
+                  (s.input as ScopeInput).platform}
               </Badge>
             )}
-            {s.input?.budget && (
+            {(s.input as ScopeInput)?.budget && (
               <Badge variant="secondary">
-                {BUDGET_LABELS[s.input.budget] ?? s.input.budget}
+                {BUDGET_LABELS[(s.input as ScopeInput).budget!] ??
+                  (s.input as ScopeInput).budget}
               </Badge>
             )}
             <span>
-              {new Date(s.created_at).toLocaleDateString("en-US", {
+              {new Date(s.createdAt).toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
@@ -100,13 +102,13 @@ export default async function ScopePage({
         </div>
 
         {/* Brief */}
-        {s.input?.description && (
+        {(s.input as ScopeInput)?.description && (
           <div className="mb-8 border border-border rounded-lg p-5 bg-card">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
               Client brief
             </p>
             <p className="leading-relaxed text-foreground/80 whitespace-pre-wrap">
-              {s.input.description}
+              {(s.input as ScopeInput)?.description}
             </p>
           </div>
         )}

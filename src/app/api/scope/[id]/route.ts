@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { createServerClient } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import type { SessionClaims } from "@/types/auth";
 
@@ -24,15 +24,14 @@ export async function DELETE(
     );
   }
 
-  const supabase = createServerClient();
-
-  const { error } = await supabase
-    .from("scopes")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", userId);
-
-  if (error) {
+  try {
+    await prisma.scope.delete({
+      where: {
+        id: id,
+        userId: userId,
+      },
+    });
+  } catch (error) {
     return NextResponse.json(
       { error: "Failed to delete scope" },
       { status: 500 },
