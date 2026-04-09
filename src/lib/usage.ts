@@ -1,21 +1,20 @@
-import { createServerClient } from "./supabase";
+import { prisma } from "./prisma";
 
 export const FREE_SCOPE_LIMIT = 2;
 
 export async function getScopeCount(userId: string): Promise<number> {
-  const supabase = createServerClient();
-  const { count, error } = await supabase
-    .from("scopes")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", userId);
+  const count = await prisma.scope.count({
+    where: {
+      userId: userId,
+    },
+  });
 
-  if (error) throw new Error(`Failed to get scope count: ${error.message}`);
-  return count ?? 0;
+  return count;
 }
 
 export async function canGenerateScope(
   userId: string,
-  isPro: boolean
+  isPro: boolean,
 ): Promise<{ allowed: boolean; count: number }> {
   if (isPro) return { allowed: true, count: 0 };
   const count = await getScopeCount(userId);
