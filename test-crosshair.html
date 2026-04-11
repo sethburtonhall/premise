@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { background: #000; padding: 20px; }
+.test { margin: 20px 0; }
+</style>
+</head>
+<body>
+<!-- Original with round caps -->
+<div class="test">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="22" x2="18" y1="12" y2="12"></line>
+    <line x1="6" x2="2" y1="12" y2="12"></line>
+    <line x1="12" x2="12" y1="6" y2="2"></line>
+    <line x1="12" x2="12" y1="22" y2="18"></line>
+  </svg>
+  <span style="color: white; margin-left: 10px;">With round caps (original)</span>
+</div>
+
+<!-- With butt caps -->
+<div class="test">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="22" x2="18" y1="12" y2="12"></line>
+    <line x1="6" x2="2" y1="12" y2="12"></line>
+    <line x1="12" x2="12" y1="6" y2="2"></line>
+    <line x1="12" x2="12" y1="22" y2="18"></line>
+  </svg>
+  <span style="color: white; margin-left: 10px;">With butt caps</span>
+</div>
+
+<!-- With square caps -->
+<div class="test">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="square" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="22" x2="18" y1="12" y2="12"></line>
+    <line x1="6" x2="2" y1="12" y2="12"></line>
+    <line x1="12" x2="12" y1="6" y2="2"></line>
+    <line x1="12" x2="12" y1="22" y2="18"></line>
+  </svg>
+  <span style="color: white; margin-left: 10px;">With square caps</span>
+</div>
+
+<!-- Smaller size to emphasize the effect -->
+<div class="test">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="22" x2="18" y1="12" y2="12"></line>
+    <line x1="6" x2="2" y1="12" y2="12"></line>
+    <line x1="12" x2="12" y1="6" y2="2"></line>
+    <line x1="12" x2="12" y1="22" y2="18"></line>
+  </svg>
+  <span style="color: white; margin-left: 10px;">Size 3 (12px) with round caps</span>
+</div>
+</body>
+</html>

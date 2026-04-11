@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { PrintTrigger } from "@/components/print-trigger";
+import { Crosshair } from "lucide-react";
 import type { Scope } from "@/types/scope";
 import type { SessionClaims } from "@/types/auth";
 
@@ -68,23 +69,7 @@ export default async function PrintScopePage({
           {/* Document header */}
           <div className="flex items-center justify-between mb-8 pb-5 border-b border-zinc-200">
             <div className="flex items-center gap-2">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#6366F1"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="1" />
-                <line x1="12" y1="2" x2="12" y2="6" />
-                <line x1="12" y1="18" x2="12" y2="22" />
-                <line x1="2" y1="12" x2="6" y2="12" />
-                <line x1="18" y1="12" x2="22" y2="12" />
-              </svg>
+              <Crosshair className="size-3" />
               <span className="font-semibold text-sm tracking-tight text-zinc-900">
                 Premise
               </span>
