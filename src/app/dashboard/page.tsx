@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { UserButton } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/button-link";
 import { Logo } from "@/components/logo";
@@ -12,24 +11,7 @@ import { DeleteScopeButton } from "@/components/delete-scope-button";
 import type { Scope } from "@/generated/prisma/client";
 import type { ScopeInput } from "@/types/scope";
 import type { SessionClaims } from "@/types/auth";
-
-const PLATFORM_LABELS: Record<string, string> = {
-  "web-app": "Web app",
-  "marketing-site": "Marketing site",
-  "mobile-app": "Mobile app",
-  ecommerce: "E-commerce",
-  "api-backend": "API / backend",
-  other: "Other",
-  unknown: "Platform TBD",
-};
-
-const BUDGET_LABELS: Record<string, string> = {
-  "under-10k": "Under $10k",
-  "10k-50k": "$10k–$50k",
-  "50k-100k": "$50k–$100k",
-  "100k-plus": "$100k+",
-  unknown: "Budget TBD",
-};
+import { PLATFORM_LABELS, BUDGET_LABELS } from "@/lib/constants";
 
 export default async function DashboardPage() {
   const { userId, has, sessionClaims } = await auth();
@@ -77,7 +59,7 @@ export default async function DashboardPage() {
               )}
             {(sessionClaims as SessionClaims)?.metadata?.special_access ===
               true && (
-              <Badge className="text-xs hidden sm:inline-flex bg-green-500/10 text-green-600 border-green-500/20">
+              <Badge className="text-xs hidden sm:inline-flex bg-success/10 text-success border-success/20">
                 Special Access
               </Badge>
             )}
@@ -121,7 +103,9 @@ export default async function DashboardPage() {
                         ? (BUDGET_LABELS[(scope.input as ScopeInput).budget!] ??
                           (scope.input as ScopeInput).budget)
                         : null}
-                      {" · "}
+                      {((scope.input as ScopeInput)?.platform ||
+                        (scope.input as ScopeInput)?.budget) &&
+                        " · "}
                       {new Date(scope.createdAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",

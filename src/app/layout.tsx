@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Figtree, Barlow_Condensed, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const figtree = Figtree({
+  variable: "--font-sans-var",
   subsets: ["latin"],
 });
 
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-display-var",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono-var",
   subsets: ["latin"],
 });
 
@@ -41,10 +47,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${figtree.variable} ${barlowCondensed.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <a href="#main" className="skip-nav">
+          Skip to main content
+        </a>
         <Providers>{children}</Providers>
       </body>
     </html>

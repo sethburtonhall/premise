@@ -10,14 +10,15 @@ export function ThemeToggle() {
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return <div className="w-7 h-7" />;
+  if (!mounted) return <div className="w-[44px] h-[44px]" />;
 
   return (
     <Button
       variant="ghost"
-      size="icon-sm"
+      size="icon"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       aria-label="Toggle theme"
+      className="min-h-[44px] min-w-[44px]"
     >
       {resolvedTheme === "dark" ? (
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

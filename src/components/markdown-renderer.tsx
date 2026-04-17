@@ -2,6 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { cn } from "@/lib/utils";
 
 export function MarkdownRenderer({
@@ -45,8 +46,8 @@ export function MarkdownRenderer({
         "prose-td:text-foreground/90 prose-td:border-border/50",
       ],
     )}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-        {content}
+      <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+        {content.replace(/\n(\*\*[^*\n]+\*\* —)/g, "\n\n$1")}
       </ReactMarkdown>
       {cursor && (
         <span className="inline-block w-1.5 h-4 bg-primary animate-pulse ml-0.5 align-text-bottom" />

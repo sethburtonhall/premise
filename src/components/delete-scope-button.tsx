@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ export function DeleteScopeButton({
   redirectOnDelete?: string;
   variant?: "icon" | "button";
 }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -30,11 +32,10 @@ export function DeleteScopeButton({
     setIsDeleting(true);
     try {
       const res = await fetch(`/api/scope/${scopeId}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error(await res.text());
+      setOpen(false);
       toast.success("Scope deleted");
-      setTimeout(() => {
-        window.location.href = redirectOnDelete ?? "/dashboard";
-      }, 600);
+      router.push(redirectOnDelete ?? "/dashboard");
     } catch {
       toast.error("Failed to delete scope. Please try again.");
     } finally {

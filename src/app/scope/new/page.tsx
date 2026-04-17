@@ -234,14 +234,14 @@ export default function NewScopePage() {
 
             <div className="grid sm:grid-cols-2 gap-4 max-w-lg">
               <div className="space-y-2">
-                <Label>Budget range</Label>
+                <Label id="budget-label">Budget range</Label>
                 <Select
                   value={formData.budget}
                   onValueChange={(v) =>
                     setFormData((p) => ({ ...p, budget: v ?? "" }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="budget-label">
                     <SelectValue placeholder="Select budget" />
                   </SelectTrigger>
                   <SelectContent>
@@ -255,14 +255,14 @@ export default function NewScopePage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Timeline</Label>
+                <Label id="timeline-label">Timeline</Label>
                 <Select
                   value={formData.timeline}
                   onValueChange={(v) =>
                     setFormData((p) => ({ ...p, timeline: v ?? "" }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="timeline-label">
                     <SelectValue placeholder="Select timeline" />
                   </SelectTrigger>
                   <SelectContent>
@@ -276,14 +276,14 @@ export default function NewScopePage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Platform</Label>
+                <Label id="platform-label">Platform</Label>
                 <Select
                   value={formData.platform}
                   onValueChange={(v) =>
                     setFormData((p) => ({ ...p, platform: v ?? "" }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="platform-label">
                     <SelectValue placeholder="Select platform" />
                   </SelectTrigger>
                   <SelectContent>
@@ -297,14 +297,14 @@ export default function NewScopePage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Your context</Label>
+                <Label id="context-label">Your context</Label>
                 <Select
                   value={formData.teamContext}
                   onValueChange={(v) =>
                     setFormData((p) => ({ ...p, teamContext: v ?? "" }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="context-label">
                     <SelectValue placeholder="Who is this for?" />
                   </SelectTrigger>
                   <SelectContent>
@@ -338,7 +338,7 @@ export default function NewScopePage() {
           {hasOutput && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-sm">
+                <h2 className="font-semibold text-base">
                   {isLoading ? (
                     <span className="text-muted-foreground">
                       Writing your scope <AnimatedDots />

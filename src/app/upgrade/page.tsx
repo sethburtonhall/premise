@@ -20,7 +20,7 @@ export default function UpgradePage() {
       </nav>
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-6 py-16">
-        <div className="text-center mb-12">
+        <div className="text-left sm:text-center mb-12">
           <h1 className="text-2xl font-bold tracking-tight mb-3">
             Upgrade to Premise Pro
           </h1>

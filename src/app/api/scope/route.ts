@@ -104,8 +104,54 @@ export async function POST(req: Request) {
     teamContext,
   };
 
+  if (process.env.USE_OLLAMA === "true") {
+    const ollamaModel = process.env.OLLAMA_MODEL ?? "llama3.1:8b";
+    const res = await fetch("http://localhost:11434/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: ollamaModel,
+        messages: [
+          { role: "system", content: SCOPE_SYSTEM_PROMPT },
+          { role: "user", content: buildScopePrompt(input) },
+        ],
+        stream: true,
+        think: false,
+      }),
+    });
+
+    if (!res.ok || !res.body) {
+      return new Response("Ollama request failed", { status: 502 });
+    }
+
+    const readable = new ReadableStream({
+      async start(controller) {
+        const reader = res.body!.getReader();
+        const decoder = new TextDecoder();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const lines = decoder.decode(value).split("\n").filter(Boolean);
+          for (const line of lines) {
+            try {
+              const data = JSON.parse(line);
+              const content = data.message?.content;
+              if (content)
+                controller.enqueue(new TextEncoder().encode(content));
+            } catch {}
+          }
+        }
+        controller.close();
+      },
+    });
+
+    return new Response(readable, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+
   const result = streamText({
-    model: anthropic("claude-sonnet-4-6"),
+    model: anthropic(process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-5"),
     system: SCOPE_SYSTEM_PROMPT,
     prompt: buildScopePrompt(input),
     temperature: 0.3,

@@ -14,24 +14,7 @@ import { DeleteScopeButton } from "@/components/delete-scope-button";
 import type { Scope } from "@/generated/prisma/client";
 import type { ScopeInput } from "@/types/scope";
 import type { SessionClaims } from "@/types/auth";
-
-const PLATFORM_LABELS: Record<string, string> = {
-  "web-app": "Web app",
-  "marketing-site": "Marketing site",
-  "mobile-app": "Mobile app",
-  ecommerce: "E-commerce",
-  "api-backend": "API / backend",
-  other: "Other",
-  unknown: "Platform TBD",
-};
-
-const BUDGET_LABELS: Record<string, string> = {
-  "under-10k": "Under $10k",
-  "10k-50k": "$10k–$50k",
-  "50k-100k": "$50k–$100k",
-  "100k-plus": "$100k+",
-  unknown: "Budget TBD",
-};
+import { PLATFORM_LABELS, BUDGET_LABELS } from "@/lib/constants";
 
 export default async function ScopePage({
   params,
@@ -119,7 +102,7 @@ export default async function ScopePage({
             <CopyButton text={s.output} />
             {isPro && <ExportPdfButton scopeId={s.id} />}
           </div>
-          <div className="flex items-center gap-2 group">
+          <div className="flex items-center gap-2">
             {canGenerate && (
               <ButtonLink href="/scope/new" size="sm" variant="ghost">
                 + New scope
