@@ -5,6 +5,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Toaster } from "@/components/ui/sonner";
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
 function ClerkWithTheme({ children }: { children: React.ReactNode }) {
   const { resolvedTheme } = useTheme();
 
@@ -12,6 +14,10 @@ function ClerkWithTheme({ children }: { children: React.ReactNode }) {
     <ClerkProvider
       appearance={{
         baseTheme: resolvedTheme === "dark" ? dark : undefined,
+        options: {
+          termsPageUrl: `${appUrl}/terms`,
+          privacyPageUrl: `${appUrl}/privacy`,
+        },
         variables: {
           colorPrimary: "#4076F5",
           borderRadius: "0.5rem",
